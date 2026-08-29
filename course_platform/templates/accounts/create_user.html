@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Create User - CourseHub{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Create User</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>Create New User</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="createUserForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" name="username" class="form-control" required placeholder="Enter username">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" 
+                        name="password" 
+                        class="form-control" 
+                        required minlength="8"
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                        placeholder="Enter strong password">
+                        <div class="form-text">Min 8 chars, 1 uppercase, 1 number.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role <span class="text-danger">*</span></label>
+                        <select name="role" id="roleSelect" class="form-select" required>
+                            <option value="">Select role...</option>
+                            <option value="admin">Admin</option>
+                            <option value="analyst">Data Analyst</option>
+                            <option value="instructor">Instructor</option>
+                            <option value="student">Student</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" required placeholder="Enter full name">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label" id="emailLabel">Email Address</label>
+                        <input type="email" name="email" id="emailInput" class="form-control" placeholder="Enter email address">
+                        <div class="form-text text-muted" id="emailHelp">Optional for Admins/Analysts, Required for others.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>Create User
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.getElementById('roleSelect');
+        const emailInput = document.getElementById('emailInput');
+        const emailLabel = document.getElementById('emailLabel');
+        const emailHelp = document.getElementById('emailHelp');
+
+        function updateEmailRequirement() {
+            const role = roleSelect.value;
+            
+            // Students and Instructors MUST have emails in your Database Schema
+            if (role === 'student' || role === 'instructor') {
+                emailInput.required = true;
+                emailLabel.innerHTML = 'Email Address <span class="text-danger">*</span>';
+                emailHelp.classList.add('d-none'); // Hide the "optional" text
+            } else {
+                emailInput.required = false;
+                emailLabel.innerHTML = 'Email Address';
+                emailHelp.classList.remove('d-none');
+            }
+        }
+
+        // Run on change and on load (in case browser remembers selection)
+        roleSelect.addEventListener('change', updateEmailRequirement);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Courses - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="bi bi-gear me-2"></i>Manage Courses</h2>
+        <p class="text-muted">Assign instructors and manage student enrollments</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'create_course' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Create Course
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for course in courses %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column"> 
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-primary">{{ course.get_program_type_display }}</span>
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-people-fill me-1"></i>
+                        {{ course.student_count|default:"0" }} 
+                    </span>
+                </div>
+
+                <h5 class="card-title mb-1">{{ course.name }}</h5>
+                
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-person-video3 me-1 text-primary"></i>
+                    {% with teaches_entry=course.teaches_set.first %}
+                        {% if teaches_entry %}
+                            {{ teaches_entry.instructor.name }}
+                        {% else %}
+                            <span class="text-danger fw-bold">Unassigned</span>
+                        {% endif %}
+                    {% endwith %}
+                </p>
+
+                <div class="mt-auto"> 
+                    <div class="d-flex justify-content-between text-muted small mb-2">
+                        <span><i class="bi bi-clock me-1"></i>{{ course.duration|default:"Self-paced" }}</span>
+                        <span class="text-success fw-bold">₹{{ course.price }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-0 pt-0 d-flex gap-2">
+                <a href="{% url 'manage_course_detail' course.course_id %}" class="btn btn-outline-info flex-grow-1">
+                    <i class="bi bi-sliders me-1"></i>Manage
+                </a>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ course.course_id }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal{{ course.course_id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Course?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete <strong>{{ course.name }}</strong>?</p>
+                        <p class="text-danger small mb-0">This will remove all student enrollments and instructor assignments.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <a href="{% url 'delete_course' course.course_id %}" class="btn btn-danger">Delete Permanently</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    {% endfor %}
+</div>
+{% endblock %}

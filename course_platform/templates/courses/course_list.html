@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-collection me-2"></i>Courses</h2>
+    </div>
+</div>
+
+<div class="card mb-4 border-0 shadow-sm bg-light">
+    <div class="card-body">
+        <form method="GET" action="{% url 'course_list' %}" class="row g-3 align-items-end" autocomplete="off">
+            
+            <div class="col-md-4">
+                <label class="form-label fw-bold small text-muted">SEARCH</label>
+                <input type="text" name="q" class="form-control" placeholder="Search..." value="{{ query }}">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label fw-bold small text-muted">PROGRAM</label>
+                <select name="program" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Programs</option>
+                    <option value="certificate" {% if program_filter == 'certificate' %}selected{% endif %}>Certificate</option>
+                    <option value="diploma" {% if program_filter == 'diploma' %}selected{% endif %}>Diploma</option>
+                    <option value="degree" {% if program_filter == 'degree' %}selected{% endif %}>Degree</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label fw-bold small text-muted">TOPIC</label>
+                <select name="topic" class="form-select" onchange="this.form.submit()">
+                    <option value="" {% if not topic_filter %}selected{% endif %}>All Topics</option>
+                    {% for topic in all_topics %}
+                        <option value="{{ topic.pk }}" 
+                            {% if topic_filter|slugify == topic.pk|slugify %}selected{% endif %}>
+                            {{ topic.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <a href="{% url 'course_list' %}" class="btn btn-outline-secondary w-100">Reset</a>
+            </div>
+            
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for course in courses %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-primary">{{ course.get_program_type_display }}</span>
+                    <span class="text-success fw-bold">₹{{ course.price }}</span>
+                </div>
+                <h5 class="card-title">{{ course.name }}</h5>
+                <p class="text-muted mb-2"><i class="bi bi-clock me-1"></i>{{ course.duration|default:"Self-paced" }}
+                </p>
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                    {% for topic in course.topics.all|slice:":3" %}
+                    <span class="badge bg-light text-dark">{{ topic.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0 pt-0">
+                <a href="{% url 'course_detail' course.course_id %}" class="btn btn-outline-primary w-100">
+                    View Details <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 text-muted">No courses found</h4>
+                <p class="text-muted">Try adjusting your search criteria.</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

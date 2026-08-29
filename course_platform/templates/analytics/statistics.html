@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistics - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-1"><i class="bi bi-graph-up me-2"></i>Platform Statistics</h2>
+        <p class="text-muted">Comprehensive analytics and insights about the platform</p>
+    </div>
+</div>
+
+<!-- Summary Statistics Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-book-fill text-primary" style="font-size: 2.5rem;"></i>
+                <h3 class="mt-3 mb-0">{{ total_courses }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Courses</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-people-fill text-success" style="font-size: 2.5rem;"></i>
+                <h3 class="mt-3 mb-0">{{ total_students }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-person-badge-fill text-info" style="font-size: 2.5rem;"></i>
+                <h3 class="mt-3 mb-0">{{ total_instructors }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Instructors</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle-fill text-warning" style="font-size: 2.5rem;"></i>
+                <h3 class="mt-3 mb-0">{{ total_enrollments }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Enrollments</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- COURSE STATISTICS SECTION -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h4 class="mb-4"><i class="bi bi-bar-chart-fill me-2"></i>Course Statistics</h4>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Most Popular Courses -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-star-fill me-2"></i>Most Popular Courses</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Enrollments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in popular_courses %}
+                            <tr>
+                                <td>{{ course.name }}</td>
+                                <td><span class="badge bg-primary">{{ course.enrollment_count }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Type Distribution -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Course Type Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Program Type</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in course_by_type %}
+                            <tr>
+                                <td>{{ item.program_type|default:"Not Specified" }}</td>
+                                <td><span class="badge bg-success">{{ item.count }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Average Evaluations per Course -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Average Course Evaluations</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Average Evaluation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in avg_evaluations %}
+                            <tr>
+                                <td>{{ item.course__name }}</td>
+                                <td>
+                                    <strong>{{ item.avg_eval|floatformat:2 }}</strong>/100
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- STUDENT DEMOGRAPHICS SECTION -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h4 class="mb-4"><i class="bi bi-people-fill me-2"></i>Student Demographics</h4>
+    </div>
+</div>
+
+<!-- Demographics by Nationality and Skill Level -->
+<div class="row g-4 mb-4">
+    <!-- Student Demographics by Nationality -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-globe me-2"></i>Students by Nationality</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nationality</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in demographics_by_nationality %}
+                            <tr>
+                                <td>{{ item.nationality|default:"Not Specified" }}</td>
+                                <td><span class="badge bg-secondary">{{ item.count }}</span></td>
+                                <td>
+                                    {% widthratio item.count total_students 100 as pct %}{{ pct }}%
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ pct }}"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <script>document.currentScript.previousElementSibling.querySelector('.progress-bar').style.width = '{{ pct }}%';</script>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Level Distribution -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-award me-2"></i>Skill Level Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Skill Level</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in skill_distribution %}
+                            <tr>
+                                <td>
+                                    {% if item.skill_level == 'Beginner' %}
+                                    <span class="badge bg-info">Beginner</span>
+                                    {% elif item.skill_level == 'Intermediate' %}
+                                    <span class="badge bg-primary">Intermediate</span>
+                                    {% elif item.skill_level == 'Advanced' %}
+                                    <span class="badge bg-success">Advanced</span>
+                                    {% else %}
+                                    {{ item.skill_level|title }}
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge bg-secondary">{{ item.count }}</span></td>
+                                <td>
+                                    {% widthratio item.count total_students 100 as pct %}{{ pct }}%
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ pct }}"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <script>document.currentScript.previousElementSibling.querySelector('.progress-bar').style.width = '{{ pct }}%';</script>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enrollment Statistics -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Course Enrollment Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Courses Enrolled</th>
+                                <th>Number of Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in enrollment_stats %}
+                            <tr>
+                                <td>{{ item.course_count }} course{{ item.course_count|pluralize }}</td>
+                                <td><span class="badge bg-info">{{ item.student_count }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

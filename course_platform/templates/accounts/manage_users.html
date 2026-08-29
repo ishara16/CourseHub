@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2><i class="bi bi-people-fill me-2"></i>Manage Users</h2>
+        <p class="text-muted">Elevate privileges and manage system access</p>
+    </div>
+    <div class="col-md-6">
+        <form method="get" class="d-flex gap-2">
+            <input type="text" name="q" class="form-control" placeholder="Search by username..." value="{{ query }}">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+            <a href="{% url 'create_user' %}" class="btn btn-success text-nowrap">
+                <i class="bi bi-plus-lg"></i> Add New
+            </a>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td class="ps-4 fw-bold">{{ user.name }}</td>
+                        <td class="text-muted">{{ user.username }}</td>
+                        <td>
+                            {% if user.role == 'admin' %}
+                                <span class="badge bg-danger">Admin</span>
+                            {% elif user.role == 'instructor' %}
+                                <span class="badge bg-warning text-dark">Instructor</span>
+                            {% elif user.role == 'student' %}
+                                <span class="badge bg-info text-dark">Student</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ user.role|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2 align-items-center">
+                                {% if not user.is_admin %}
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#promoteModal{{ user.username|slugify }}"
+                                            title="Promote to Admin">
+                                        <i class="bi bi-arrow-up-circle"></i>
+                                    </button>
+                                {% else %}
+                                    <span class="text-muted small"><i class="bi bi-check2-all me-1"></i>System Admin</span>
+                                {% endif %}
+
+                                {% if user.role == 'instructor' or user.role == 'analyst' %}
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteUserModal{{ user.username|slugify }}"
+                                            title="Delete User">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% for user in users %}
+    
+    {% if not user.is_admin %}
+    <div class="modal fade" id="promoteModal{{ user.username|slugify }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Elevate Privileges?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to promote <strong>{{ user.name }}</strong> to <strong>Admin</strong>?</p>
+                    <p class="small text-muted">They will gain full control over courses and users. This usually cannot be undone easily.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="{% url 'promote_user' user.username %}" class="btn btn-danger">Yes, Promote to Admin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if user.role == 'instructor' or user.role == 'analyst' %}
+    <div class="modal fade" id="deleteUserModal{{ user.username|slugify }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete User?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <strong>{{ user.name }}</strong> ({{ user.role|title }})?</p>
+                    <p class="text-danger small mb-0">This action is permanent and will remove them from all assigned courses.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="{% url 'delete_user' user.username %}" class="btn btn-danger">Delete Permanently</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+{% endfor %}
+
+{% endblock %}

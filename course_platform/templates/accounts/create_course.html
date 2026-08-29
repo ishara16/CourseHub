@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Course - CourseHub{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'manage_courses' %}">Manage Courses</a></li>
+        <li class="breadcrumb-item active">Create Course</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Display Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {% if message.tags == 'error' %}
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {% elif message.tags == 'success' %}
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                    {% endif %}
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Create New Course</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Course Name <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               name="name" 
+                               class="form-control" 
+                               value="{{ form_data.name|default:'' }}"
+                               required 
+                               placeholder="Enter course name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Duration <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               name="duration" 
+                               class="form-control"
+                               value="{{ form_data.duration|default:'' }}"
+                               placeholder="e.g., 8 weeks, 3 months"
+                               pattern="^[0-9]+\s+(week|weeks|month|months)$" 
+                               title="Format must be like '8 weeks' or '3 months'"
+                               required>
+                        <div class="form-text text-muted">Must be format: "X weeks" or "Y months"</div>
+                    </div>
+
+                    <!-- Checkboxes for Instructors -->
+                    <div class="mb-3">
+                        <label class="form-label d-block">Assign Instructor(s) <span class="text-danger">*</span></label>
+                        <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto;">
+                            {% for instructor in all_instructors %}
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           name="instructor_id" 
+                                           value="{{ instructor.instructor_id }}"
+                                           id="instructor_{{ instructor.instructor_id }}"
+                                           {% if instructor.instructor_id|stringformat:"s" in form_data.getlist.instructor_id %}checked{% endif %}>
+                                    <label class="form-check-label" for="instructor_{{ instructor.instructor_id }}">
+                                        <strong>{{ instructor.name }}</strong> - {{ instructor.qualifications }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-text text-muted">
+                            <i class="bi bi-info-circle me-1"></i>Select one or more instructors for this course
+                        </div>
+                    </div>
+
+                    <!-- Single Select for Partner University -->
+                    <div class="mb-3">
+                        <label class="form-label">Partner University <span class="text-danger">*</span></label>
+                        <select name="university_id" class="form-select" required>
+                            <option value="">Select a partner university...</option>
+                            {% for university in all_universities %}
+                                <option value="{{ university.university_id }}"
+                                    {% if form_data.university_id == university.university_id|stringformat:"s" %}selected{% endif %}>
+                                    {{ university.name }} ({{ university.country }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text text-muted">
+                            <i class="bi bi-building me-1"></i>Each course must be partnered with exactly one university
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Program Type <span class="text-danger">*</span></label>
+                        <select name="program_type" class="form-select" required>
+                            <option value="certificate" {% if form_data.program_type == 'certificate' %}selected{% endif %}>Certificate</option>
+                            <option value="diploma" {% if form_data.program_type == 'diploma' %}selected{% endif %}>Diploma</option>
+                            <option value="degree" {% if form_data.program_type == 'degree' %}selected{% endif %}>Degree</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Price (₹)</label>
+                        <input type="number" 
+                               name="price" 
+                               class="form-control" 
+                               value="{{ form_data.price|default:'0' }}" 
+                               min="0" 
+                               step="0.01">
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>Create Course
+                        </button>
+                        <a href="{% url 'manage_courses' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

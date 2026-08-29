@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Demographics - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-1"><i class="bi bi-people-fill me-2"></i>Student Demographics</h2>
+        <p class="text-muted">Analyze student distribution and profiles</p>
+    </div>
+</div>
+
+<!-- Summary Statistics Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-book-fill text-primary" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_courses }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Courses</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-people-fill text-success" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_students }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-person-badge-fill text-info" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_instructors }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Instructors</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle-fill text-warning" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_enrollments }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Enrollments</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demographics by Nationality and Skill Level -->
+<div class="row g-4 mb-4">
+    <!-- Student Demographics by Nationality -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-globe me-2"></i>Students by Nationality</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nationality</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in demographics_by_nationality %}
+                            <tr>
+                                <td>{{ item.nationality|default:"Not Specified" }}</td>
+                                <td><span class="badge bg-secondary">{{ item.count }}</span></td>
+                                <td>
+                                    {% widthratio item.count total_students 100 %}%
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {% widthratio item.count total_students 100 %}%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Level Distribution -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-award me-2"></i>Skill Level Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Skill Level</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in skill_distribution %}
+                            <tr>
+                                <td>
+                                    {% if item.skill_level == 'beginner' %}
+                                        <span class="badge bg-info">Beginner</span>
+                                    {% elif item.skill_level == 'intermediate' %}
+                                        <span class="badge bg-primary">Intermediate</span>
+                                    {% elif item.skill_level == 'advanced' %}
+                                        <span class="badge bg-success">Advanced</span>
+                                    {% else %}
+                                        {{ item.skill_level|title }}
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge bg-secondary">{{ item.count }}</span></td>
+                                <td>
+                                    {% widthratio item.count total_students 100 %}%
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {% widthratio item.count total_students 100 %}%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enrollment Statistics -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Course Enrollment Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Courses Enrolled</th>
+                                <th>Number of Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in enrollment_stats %}
+                            <tr>
+                                <td>{{ item.course_count }} course{% if item.course_count != 1 %}s{% endif %}</td>
+                                <td><span class="badge bg-info">{{ item.student_count }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

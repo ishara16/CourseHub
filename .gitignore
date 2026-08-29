@@ -1,0 +1,36 @@
+# Django
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+db.sqlite3
+
+# Environment
+.env
+*.env
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Static files collected
+staticfiles/
+
+# Media uploads
+media/
+
+# Secrets
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

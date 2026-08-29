@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-1"><i class="bi bi-shield-check me-2"></i>Welcome, {{ user_name }}!</h2>
+        <p class="text-muted">System Administrator Dashboard</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center d-flex flex-column">
+                <i class="bi bi-gear-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Manage Courses</h5>
+                <p class="card-text text-muted">Add/remove teachers and students.</p>
+                <a href="{% url 'manage_courses' %}" class="btn btn-primary mt-auto">Manage</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center d-flex flex-column">
+                <i class="bi bi-collection text-success" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">All Courses</h5>
+                <p class="card-text text-muted">View all courses on the platform.</p>
+                <a href="{% url 'course_list' %}" class="btn btn-primary mt-auto">Browse</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center d-flex flex-column">
+                <i class="bi bi-people-fill text-info" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Manage Users</h5>
+                <p class="card-text text-muted">Elevate privileges & add users.</p> 
+                <a href="{% url 'manage_users' %}" class="btn btn-primary mt-auto">Manage Users</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center d-flex flex-column">
+                <i class="bi bi-plus-circle text-warning" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Create Course</h5>
+                <p class="card-text text-muted">Add new courses to platform.</p>
+                <a href="{% url 'create_course' %}" class="btn btn-primary mt-auto">Create</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

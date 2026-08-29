@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics Dashboard - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-1"><i class="bi bi-graph-up-arrow me-2"></i>Welcome, {{ user_name }}!</h2>
+        <p class="text-muted">Data Analyst Dashboard</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-bar-chart-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Course Statistics</h5>
+                <p class="card-text text-muted">View enrollment data, trends, and analytics.</p>
+                <a href="{% url 'course_statistics' %}" class="btn btn-primary">View Statistics</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-people-fill text-success" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Student Demographics</h5>
+                <p class="card-text text-muted">Analyze student distribution and profiles.</p>
+                <a href="{% url 'student_demographics' %}" class="btn btn-primary">View Data</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-collection text-info" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Browse Courses</h5>
+                <p class="card-text text-muted">View all available courses.</p>
+                <a href="{% url 'course_list' %}" class="btn btn-primary">View Courses</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

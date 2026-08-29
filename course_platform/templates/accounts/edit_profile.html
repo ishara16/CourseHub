@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-white py-3 border-0">
+                <h4 class="mb-0 fw-bold text-center" style="background: var(--primary-gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Update Your Profile
+                </h4>
+            </div>
+            <div class="card-body px-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">ID* (Cannot be edited)</label>
+                        <input type="text" class="form-control bg-light border-0 py-2" 
+                            value="{% if role == 'student' %}{{ profile.student_id }}{% elif role == 'instructor' %}{{ profile.instructor_id }}{% else %}{{ profile.admin_id }}{% endif %}" readonly>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">Name*</label>
+                        <input type="text" name="name" class="form-control border-2 py-2" value="{{ profile.name }}" required>
+                    </div>
+
+                    {% if role == 'student' %}
+                    <div class="row">
+                        <div class="col-md-8 mb-4">
+                            <label class="form-label text-muted small fw-bold">Email</label>
+                            <input type="email" name="email_id" class="form-control border-2" value="{{ profile.email_id }}">
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label text-muted small fw-bold">Age</label>
+                            <input type="number" name="age" class="form-control border-2" value="{{ profile.age }}">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">Skill Level</label>
+                        <select name="skill_level" class="form-select border-2 py-2">
+                            <option value="Beginner" {% if profile.skill_level == 'Beginner' %}selected{% endif %}>Beginner</option>
+                            <option value="Intermediate" {% if profile.skill_level == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                            <option value="Advanced" {% if profile.skill_level == 'Advanced' %}selected{% endif %}>Advanced</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">Nationality</label>
+                        <input type="text" name="nationality" class="form-control border-2" value="{{ profile.nationality }}">
+                    </div>
+                    {% elif role == 'instructor' %}
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">Email</label>
+                        <input type="email" name="email_id" class="form-control border-2" value="{{ profile.email_id }}">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">Qualifications</label>
+                        <textarea name="qualifications" class="form-control border-2" rows="4">{{ profile.qualifications }}</textarea>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary py-2 fw-bold">Save Profile Changes</button>
+                        <a href="{% url 'profile' %}" class="btn btn-light py-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.name }} - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url "course_list" %}">Courses</a></li>
+                <li class="breadcrumb-item active">{{ course.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="badge bg-primary fs-6">{{ course.get_program_type_display }}</span>
+                    <span class="text-success fs-4 fw-bold">₹{{ course.price }}</span>
+                </div>
+
+                <h1 class="h2 mb-3">{{ course.name }}</h1>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p class="mb-2"><i class="bi bi-clock text-primary me-2"></i><strong>Duration:</strong> {{ course.duration|default:"Self-paced" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2"><i class="bi bi-award text-primary me-2"></i><strong>Program:</strong> {{ course.get_program_type_display }}</p>
+                    </div>
+                </div>
+
+                {% if course.topics.all %}
+                <div class="mb-4">
+                    <h6><i class="bi bi-tags me-2"></i>Topics</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for topic in course.topics.all %}
+                        <span class="badge bg-light text-dark">{{ topic.name }} ({{ topic.field }})</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if instructors %}
+                <div class="mb-4">
+                    <h6><i class="bi bi-person-badge me-2"></i>Instructors</h6>
+                    <ul class="list-unstyled">
+                        {% for t in instructors %}
+                        <li class="mb-1">
+                            <i class="bi bi-person me-1"></i>{{ t.instructor.name }}
+                            {% if t.instructor.qualifications %}<small class="text-muted"> - {{ t.instructor.qualifications }}</small>{% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="card p-4 border-0 shadow-sm bg-white">
+                    <h2 class="fw-bold mb-4">{{ course.name }}</h2>
+                    
+                    <p class="mb-2">
+                        <strong class="text-dark">Course ID:</strong> 
+                        <span class="badge bg-secondary">{{ course.course_id }}</span>
+                    </p>
+                    
+                    <p><strong>Partner University:</strong> 
+                        {% for partner in course.partner_set.all %}
+                            {{ partner.university.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Not specified
+                        {% endfor %}
+                    </p>
+
+                    <p><strong>Topic Tags:</strong> 
+                        {% for topic in course.topics.all %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 me-1">
+                                {{ topic.name }}
+                            </span>
+                        {% empty %}
+                            General
+                        {% endfor %}
+                    </p>
+
+                    <hr class="my-4">
+
+                    {% if can_view_content %}
+                        <div class="p-4 rounded bg-light border-start border-success border-4 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-success fw-bold mb-0"><i class="bi bi-unlock-fill me-2"></i>Course Resources</h5>
+                                {% if role != 'student' %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-shield-lock-fill me-1"></i> Management Access</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Study Notes</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="bi bi-file-earmark-pdf"></i></span>
+                                        <input type="text" class="form-control bg-white" value="{{ course.notes }}" readonly>
+                                        <a href="{{ course.notes }}" target="_blank" class="btn btn-outline-primary">Open</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Video Lecture Link</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+                                        <input type="text" class="form-control bg-white" value="{{ course.videos }}" readonly>
+                                        <a href="{{ course.videos }}" target="_blank" class="btn btn-outline-primary">Watch</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-0">
+                                    <p class="mb-1 text-muted small fw-bold text-uppercase">Reference Books</p>
+                                    <span class="text-dark">
+                                        {% for book in course.books.all %}
+                                            {{ book.name }}{% if not forloop.last %}, {% endif %}
+                                        {% empty %}
+                                            Check library for references.
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info border-0 shadow-sm">
+                            <h6 class="fw-bold"><i class="bi bi-lock-fill me-2"></i>Enroll to Unlock Resources</h6>
+                            <p class="mb-0 small text-muted">Study notes, video links, and reference books are reserved for enrolled students.</p>
+                            <a href="{% url 'enroll_course' course.course_id %}" class="btn btn-primary mt-3">Enroll Now</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if course.books.all %}
+                <div class="mb-4 mt-4">
+                    <h6><i class="bi bi-book me-2"></i>Reference Books</h6>
+                    <ul class="list-unstyled">
+                        {% for book in course.books.all %}
+                        <li class="mb-1">
+                            <i class="bi bi-journal me-1"></i>{{ book.name }} <small class="text-muted">by {{ book.authors }}</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 1rem;">
+            <div class="card-body">
+                {% if role == "student" %}
+                    {% if is_enrolled %}
+                    <div class="text-center mb-3">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                        <h5 class="mt-2">You are Enrolled!</h5>
+                        {% if enrollment.evaluation > 0 %}
+                        <p class="text-muted">Your score: <strong>{{ enrollment.evaluation }}/100</strong></p>
+                        {% endif %}
+                    </div>
+                    <a href="{% url "unenroll_course" course.course_id %}" class="btn btn-outline-danger w-100" onclick="return confirm('Are you sure you want to unenroll?')">
+                        <i class="bi bi-x-circle me-2"></i>Unenroll
+                    </a>
+                    {% else %}
+                    <div class="text-center mb-3">
+                        <i class="bi bi-mortarboard text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="mt-2">Start Learning</h5>
+                        <p class="text-muted">Enroll now to access course content</p>
+                    </div>
+                    <a href="{% url "enroll_course" course.course_id %}" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle me-2"></i>Enroll Now
+                    </a>
+                    {% endif %}
+                {% elif role == "instructor" %}
+                <div class="text-center mb-3">
+                    <i class="bi bi-pencil-square text-warning" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">Course Content</h5>
+                    <p class="text-muted">Add or update course materials</p>
+                </div>
+                <a href="{% url "add_content" course.course_id %}" class="btn btn-warning w-100">
+                    <i class="bi bi-upload me-2"></i>Manage Content
+                </a>
+                {% elif role == "admin" %}
+                <div class="text-center mb-3">
+                    <i class="bi bi-gear text-info" style="font-size: 3rem;"></i>
+                    <h5 class="mt-2">Administration</h5>
+                    <p class="text-muted">Manage course assignments</p>
+                </div>
+                <a href="{% url "manage_course_detail" course.course_id %}" class="btn btn-info w-100 text-white">
+                    <i class="bi bi-sliders me-2"></i>Manage Course
+                </a>
+                {% else %}
+                <div class="text-center">
+                    <i class="bi bi-info-circle text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-2 text-muted">View course analytics</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

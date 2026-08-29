@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Statistics - CourseHub{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-1"><i class="bi bi-bar-chart-fill me-2"></i>Course Statistics</h2>
+        <p class="text-muted">Detailed analytics about courses, enrollments, and evaluations</p>
+    </div>
+</div>
+
+<!-- Summary Statistics Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-book-fill text-primary" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_courses }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Courses</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-people-fill text-success" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_students }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-person-badge-fill text-info" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_instructors }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Instructors</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle-fill text-warning" style="font-size: 2rem;"></i>
+                <h3 class="mt-2 mb-0">{{ total_enrollments }}</h3>
+                <p class="text-muted mt-2 mb-0">Total Enrollments</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Most Popular Courses -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-star-fill me-2"></i>Most Popular Courses</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Enrollments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in popular_courses %}
+                            <tr>
+                                <td>{{ course.name }}</td>
+                                <td><span class="badge bg-primary">{{ course.enrollment_count }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Type Distribution -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Course Type Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Program Type</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in course_by_type %}
+                            <tr>
+                                <td>{{ item.program_type|default:"Not Specified" }}</td>
+                                <td><span class="badge bg-success">{{ item.count }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Average Evaluations per Course -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Average Course Evaluations</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Average Evaluation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in avg_evaluations %}
+                            <tr>
+                                <td>{{ item.course__name }}</td>
+                                <td>
+                                    <strong>{{ item.avg_eval|floatformat:2 }}</strong>/100
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

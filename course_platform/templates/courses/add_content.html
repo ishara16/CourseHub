@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Content - {{ course.name }} - CourseHub{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'my_courses' %}">My Courses</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'course_detail' course.course_id %}">{{ course.name }}</a></li>
+        <li class="breadcrumb-item active">Add Content</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-upload me-2"></i>Add Course Content</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label"><i class="bi bi-play-circle me-1"></i>Video Content</label>
+                        <textarea name="videos" class="form-control" rows="4"
+                            placeholder="Add video links or embed codes...">{{ course.videos }}</textarea>
+                        <div class="form-text">Add links to video lectures or embedded video content.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label"><i class="bi bi-file-text me-1"></i>Course Notes</label>
+                        <textarea name="notes" class="form-control" rows="6"
+                            placeholder="Add course notes, resources, or documentation...">{{ course.notes }}</textarea>
+                        <div class="form-text">Add study materials, notes, or links to resources.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>Save Changes
+                        </button>
+                        <a href="{% url 'course_detail' course.course_id %}"
+                            class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h6><i class="bi bi-info-circle me-2"></i>Course Info</h6>
+                <hr>
+                <p><strong>Name:</strong> {{ course.name }}</p>
+                <p><strong>Type:</strong> {{ course.get_program_type_display }}</p>
+                <p><strong>Duration:</strong> {{ course.duration|default:"Not set" }}</p>
+                <p class="mb-0"><strong>Price:</strong> ₹{{ course.price }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
